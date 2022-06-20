@@ -112,6 +112,19 @@ process CREATE_TX2GENE {
 	"""
 }
 
+process CREATE_META {
+
+	input:
+
+	output:
+
+	script:
+	"""
+
+	"""
+
+}
+
 process SALMON_TXIMPORT {
 
 	publishDir "${params.outdir}/quant/salmon/merged", mode: 'symlink', overwrite: true
@@ -143,4 +156,25 @@ process SALMON_TXIMPORT {
 	
 	saveRDS(txi, "txi.Rds")
 	"""
+}
+
+process CREATE_DESEQ {
+
+	publishDir "${params.outdir}/quant/salmon/merged", mode: 'symlink', overwrite: true
+
+	executor "slurm"
+	cpus 6
+	time 30.m
+	module 'bioinfo-tools:R_packages/4.1.1'
+	clusterOptions '-A sens2022505'
+
+	input:
+
+	output:
+
+	script:
+	"""
+
+	"""
+
 }
