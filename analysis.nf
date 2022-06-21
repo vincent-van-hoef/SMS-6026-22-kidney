@@ -10,6 +10,7 @@ Analysis for #6026: RNAseq Kidney
 
 // Parameters
 params.outdir	= "/proj/sens2022505/nobackup/results/"
+params.meta	= "/proj/sens2022505/analysis/db/metadata.csv"
 params.txs	= "/proj/sens2022505/analysis/db/Homo_sapiens.GRCh38.cdna.all.fa"
 params.genome	= "/sw/data/iGenomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa"
 
@@ -19,7 +20,8 @@ include {
 	SALMON_INDEX;
 	SALMON_QUANT;
 	CREATE_TX2GENE;
-	SALMON_TXIMPORT
+	SALMON_TXIMPORT;
+	CREATE_DESEQ
 } from "/proj/sens2022505/analysis/src/modules/functions" 
 
 workflow{
@@ -36,7 +38,9 @@ workflow{
 		SALMON_INDEX.out)
 	CREATE_TX2GENE(params.txs)
 	SALMON_TXIMPORT(CREATE_TX2GENE.out,
-		SALMON_QUANT.out.collect())
-		
+		SALMON_QUANT.out.collect(),
+		params.meta)
+	CREATE_DESEQ(params.meta,
+		SALMON_TXIMPORT.out)	
 
 }

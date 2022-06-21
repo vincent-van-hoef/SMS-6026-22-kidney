@@ -112,19 +112,6 @@ process CREATE_TX2GENE {
 	"""
 }
 
-process CREATE_META {
-
-	input:
-
-	output:
-
-	script:
-	"""
-
-	"""
-
-}
-
 process SALMON_TXIMPORT {
 
 	publishDir "${params.outdir}/quant/salmon/merged", mode: 'symlink', overwrite: true
@@ -138,6 +125,7 @@ process SALMON_TXIMPORT {
 	input:
 	path(txs2gene)
 	path(quant)
+	path(meta)
 
 	output:
 	path("txi.Rds")
@@ -147,12 +135,15 @@ process SALMON_TXIMPORT {
 	#!/usr/bin/env Rscript
 	
 	library(tximport)
-
+	
+	meta <- read.csv("${meta}", header = TRUE)
 	tx2gene <- read.table("${txs2gene}")
 		
-	files <- list.files(pattern = "quant.sf", recursive = TRUE)
+	files <- file.path(meta\$sample, "quant.sf")
 	names(files) <- gsub("/.*", "", files)
 	txi <- tximport(files, type = "salmon", tx2gene = tx2gene)
+
+	stopifnot(identical(meta\$sample, colnames(txi\$counts)))
 	
 	saveRDS(txi, "txi.Rds")
 	"""
@@ -169,12 +160,26 @@ process CREATE_DESEQ {
 	clusterOptions '-A sens2022505'
 
 	input:
-
+	path(meta)
+	path(txi)
+	
 	output:
+	path("dds.Rds")
 
 	script:
 	"""
+	#!/usr/bin/env Rscript
 
+	library(DESeq2)
+
+	meta <- read.csv("${meta}", header = TRUE)
+	rownames(meta) <- meta\$sample
+	txi <- readRDS("${txi}")
+
+	stopifnot(identical(rownames(meta), colnames(txi\$counts)))
+
+	dds <- DESeqDataSetFromTximport(txi, meta, ~group)	
+	saveRDS(dds, "dds.Rds")
 	"""
 
 }
