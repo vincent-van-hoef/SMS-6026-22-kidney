@@ -330,7 +330,7 @@ process RUN_DESEQ {
 	design(dds) <- ~ group
 	dds <- DESeq(dds)	
 
-	saveRDS(dds, "dds.Rds")
+	saveRDS(dds, "dds_group.Rds")
 	"""
 }
 

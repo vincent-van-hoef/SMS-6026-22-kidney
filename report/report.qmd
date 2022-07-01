@@ -1,0 +1,24 @@
+---
+title: "Analysis of human myeloid cell activation using ATAC sequencing"
+subtitle: "Project #5986"
+author: "Vincent van Hoef"
+date: today
+title-block-banner: true
+reference-location: margin
+citation-location: margin
+bibliography: ./assets/citations.bib
+csl: ./assets/mla.cls
+format:
+    html:
+        theme: cosmo
+        toc: true
+        toc-location: left
+        css: "./assets/style.css"
+        self-contained: false
+        include-before-body: ./assets/custom.html
+execute: 
+  echo: false
+  warning: false
+comments: 
+    hypothesis: true
+---
