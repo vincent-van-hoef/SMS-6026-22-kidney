@@ -22,3 +22,10 @@ execute:
 comments: 
     hypothesis: true
 ---
+
+```{r}
+#| fig-cap: test fig.
+plot(1:10)
+
+library(ggplot2)
+```
