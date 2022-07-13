@@ -1,0 +1,13 @@
+First load the R_packages/4.1.1 module, then execute "singularity exec /proj/sens2022505/analysis/db/quarto_latest.sif quarto render index.qmd"
+
+Dockerfile for quarto_latest:
+
+FROM rocker/r-ver:4.1.1
+
+ENV DEBIAN_FRONTEND=noninteractive 
+
+RUN apt-get update && apt-get install -y curl libxt6 && rm -rf /var/lib/apt/lists/*
+
+RUN curl -o quarto-linux-amd64.deb -L https://github.com/quarto-dev/quarto-cli/releases/download/v1.0.11/quarto-1.0.11-linux-amd64.deb && chmod +r quarto-linux-amd64.deb
+
+RUN dpkg -i quarto-linux-amd64.deb

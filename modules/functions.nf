@@ -317,7 +317,7 @@ process RUN_DESEQ {
 	path(dds)
 	
 	output:
-	path("dds.Rds")
+	path("dds_group.Rds")
 
 	script:
 	"""

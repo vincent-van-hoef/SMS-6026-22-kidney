@@ -60,8 +60,8 @@ workflow{
 	QC_DESEQ_HM(CREATE_DESEQ.out)
 	RUN_DESEQ(CREATE_DESEQ.out)
 
-	control = Channel.of([1, "Glomerular_IgAN"], [2, "RoK_IgAN"])
-	treat = Channel.of([1, "Glomerular_LD"], [2, "RoK_LD"])
+	treat = Channel.of([1, "Glomerular_IgAN"], [2, "RoK_IgAN"])
+	control = Channel.of([1, "Glomerular_LD"], [2, "RoK_LD"])
 	treat.join(control).map{a,b,c -> tuple(b + "_vs_" + c, b, c)}.combine(RUN_DESEQ.out).set{ contrasts }
 
 	EXTRACT_RES(contrasts)
