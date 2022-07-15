@@ -42,7 +42,7 @@ Here you can see the status of the report. This will be updated as sections are 
 
 In total, there are 189 samples (One missing - which?). 
 ```{ojs}
-samples = FileAttachment("./../db/metadata.csv").csv({typed: true})
+samples = FileAttachment("./db/metadata.csv").csv({typed: true})
 ```
 
 ```{ojs}
