@@ -1,7 +1,7 @@
 process FASTP {
 	
 	tag "$id"
-	publishDir "${params.outdir}/QC/", mode: 'copy', overwrite: true, pattern: '*.{html,json}'
+	publishDir "${params.outdir}/QC/fastp/", mode: 'copy', overwrite: true, pattern: '*.json'
 
 	executor "slurm"
 	cpus 3
@@ -13,7 +13,6 @@ process FASTP {
 	tuple val(id), path(reads)
 
 	output:
-	tuple val(id), path("*.html"), emit: html
 	tuple val(id), path("*.json"), emit: json
 	tuple val(id), path("${id}_1_clean.fastq.gz"), path("${id}_2_clean.fastq.gz"), emit: clean_fq
 
@@ -27,12 +26,119 @@ process FASTP {
 		-o ${id}_1_clean.fastq.gz \
 		-O ${id}_2_clean.fastq.gz \
 		-p \
-		-j ${id}.json \
-		-h ${id}.html \
+		-j ${id}_fastp.json \
+		-h ${id}_fastp.html \
 		-R "${id}_fastp_report" \
 		-w 3
 	"""
 } 
+
+process FASTQC {
+
+	tag "$id"
+	publishDir "${params.outdir}/QC/raw/", mode: 'copy', overwrite: true, pattern: '*.zip'
+
+	executor "slurm"
+	cpus 3
+	time 90.m
+	scratch false
+	cache false
+	module 'bioinfo-tools:FastQC/0.11.8'
+	clusterOptions '-A sens2022505'
+
+	input:
+	tuple val(id), path(reads)
+
+	output:
+	tuple val(id), path("*.html"), emit: html
+	tuple val(id), path("*.zip"), emit: zip
+
+	script:
+	"""
+	fastqc --threads $task.cpus $reads
+	"""
+}
+
+process TRIMGALORE {
+
+	tag "$id"
+
+	executor "slurm"
+	cpus 4
+	time 120.m
+	scratch false
+	module 'bioinfo-tools:TrimGalore/0.6.1'
+	clusterOptions '-A sens2022505'
+
+	input:
+	tuple val(id), path(reads)
+
+	output:
+	tuple val(id), path("*val*.fq.gz")		, emit: reads
+
+	script:
+	"""
+	trim_galore -q 20 \
+		--paired \
+		--cores $task.cpus \
+		--basename $id \
+		$reads
+	"""
+}
+
+process FASTQC_TRIM {
+
+	tag "$id"
+	publishDir "${params.outdir}/QC/trimmed/", mode: 'copy', overwrite: true, pattern: '*.zip'
+
+	executor "slurm"
+	cpus 3
+	time 90.m
+	scratch false
+	cache false
+	module 'bioinfo-tools:FastQC/0.11.8'
+	clusterOptions '-A sens2022505'
+
+	input:
+	tuple val(id), path(reads)
+
+	output:
+	tuple val(id), path("*.html"), emit: html
+	tuple val(id), path("*.zip"), emit: zip
+
+	script:
+	"""
+	fastqc --threads $task.cpus $reads
+	"""
+}
+
+process MULTIQC {
+
+	publishDir "${params.outdir}/QC/trimmed/", mode: 'copy', overwrite: true, pattern: '*trimmed_multiqc*'
+	publishDir "${params.outdir}/QC/raw/", mode: 'copy', overwrite: true, pattern: '*raw_multiqc*'
+	publishDir "${params.outdir}/QC/fastp/", mode: 'copy', overwrite: true, pattern: '*fastp_multiqc*'
+
+	executor "slurm"
+	cpus 3
+	time 90.m
+	module 'bioinfo-tools:MultiQC'
+	clusterOptions '-A sens2022505'
+
+	input:
+	path(fastp)
+	path(fastqc)
+	path(trimgalore)
+
+	output:
+	path("*")
+
+	script:
+	"""
+	multiqc *_fastp.json -n fastp_multiqc
+	multiqc *_R*_fastqc.zip -n raw_multiqc
+	multiqc *_val_*_fastqc.zip -n trimmed_multiqc
+	"""
+}
 
 process SALMON_INDEX {
 
@@ -365,12 +471,15 @@ process EXTRACT_RES {
          library(grid)
          library(ggplot2)
          library(ggfortify)
+	 library(org.Hs.eg.db)
 
          dds <- readRDS("${dds}")
          res <- results(dds, contrast = c("group", "${treat}", "${contr}"))
-         res <- res %>%
-                 as.data.frame() %>%
-                 arrange(padj, pvalue)
+	 res <- res %>%
+        		as.data.frame() %>%
+        		mutate(ensembl = gsub("\\\\.[0-9]*\$", "", rownames(.)),
+               			symbol = mapIds(org.Hs.eg.db, keys = ensembl, column = "SYMBOL", keytype = "ENSEMBL", multiVals = "first")) %>%
+        		arrange(padj, pvalue)
          openxlsx::write.xlsx(res, file = "${contrast}.xlsx", overwrite = TRUE)
          write.csv(res, file = "${contrast}.csv")
 
@@ -393,5 +502,12 @@ process EXTRACT_RES {
               ggtitle("${contrast}") +
               theme_bw()
          dev.off()
+
+	 plotGenes <- res %>% arrange(-log2FoldChange) %>% head()	
+	 for(gene in rownames(plotGenes)){
+		png(paste0(gene, "_plot_counts.png"))
+		plotCounts(dds, gene = gene, intgroup = "group")
+		dev.off()
+	}
          """
  }

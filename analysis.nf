@@ -17,6 +17,10 @@ params.genome	= "/sw/data/iGenomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenome
 // Modules
 include { 
 	FASTP;
+	FASTQC;
+	FASTQC_TRIM;
+	TRIMGALORE;
+	MULTIQC;
 	SALMON_INDEX;
 	SALMON_QUANT;
 	CREATE_TX2GENE;
@@ -40,6 +44,12 @@ workflow{
 		.set{ fq_ch }
 
 	FASTP(fq_ch.reads)
+	FASTQC(fq_ch.reads)
+	TRIMGALORE(fq_ch.reads)
+	FASTQC_TRIM(TRIMGALORE.out.reads)
+	MULTIQC(FASTP.out.json.collect({it[1]}),
+		FASTQC.out.zip.collect({it[1]}),
+		FASTQC_TRIM.out.zip.collect({it[1]}))
 	SALMON_INDEX(params.txs,
 		params.genome)
 	SALMON_QUANT(FASTP.out.clean_fq,

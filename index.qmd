@@ -25,16 +25,31 @@ comments:
 
 # Introduction
 
-```{r}
-#| fig-cap: test fig.
-plot(1:10)
+::: {.callout-note}
+## Project Description
+"Our aim is to unravel global molecular fingerprints of glomerular diseases by RNA profiling of kidney tissue . We sample tissue from diagnostic kidney biopsies and perform microdissection into glomerular and tubulointerstitial fractions. In this subproject, RNA isolation and library preparation has been performed (via BEA core faciltiy) on glomerular and tubulointerstitial fractions from IgAN (n=84) and healthy living kidney donors (n=11). Libraries were sequenced at SciLife lab (Illumina Novaseq 6000). Now we need help to analyse differential gene expression between patients and controls, perform enriched pathway analyses and also to correlate DEG to clinical variables."
+:::
 
-library(ggplot2)
-```
+In total, there are 189 samples (One missing - which?). A contract was set up for 100 hours:
+
+* Run best practive RNAseq preprocessing pipeline
+* Pre- and post-alignment quality control
+* Evaluate and if necessary control for data heterogeneity
+* Differential expression of patients vs control + pathway analysis
+* correlation gene expression w/ clinical parameters and pathology scores (discuss with User)
+* Report with all results, tables and analysis code
 
 # Material and Methods
 
+## Preprocessing
+
+Quality control was performed on raw and trimmed reads using FastQC (v0.11.8) and FastP (v0.23.2). The results for all samples were summarized using MultiQC (v). Sequencing adapters and low quality bases and reads were removed using Trimmomatic (wrapped in TrimGalore v0.6.1) using the standard parameters.
+
+## (Quasi-)Mapping
+
 # Results
+
+## Quality Control
 
 # Data Responsibility
 

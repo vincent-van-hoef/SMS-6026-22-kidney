@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Vincent van Hoef">
-<meta name="dcterms.date" content="2022-07-13">
+<meta name="dcterms.date" content="2022-07-15">
 
 <title>RNA sequencing of microdissected kidney biopsies from IgA nephropathy patients</title>
 <style>
@@ -59,7 +59,7 @@ ul.task-list{list-style: none;}
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">July 13, 2022</p>
+        <p class="date">July 15, 2022</p>
       </div>
     </div>
       
@@ -73,8 +73,15 @@ ul.task-list{list-style: none;}
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#material-and-methods" id="toc-material-and-methods" class="nav-link" data-scroll-target="#material-and-methods">Material and Methods</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#material-and-methods" id="toc-material-and-methods" class="nav-link" data-scroll-target="#material-and-methods">Material and Methods</a>
+  <ul class="collapse">
+  <li><a href="#preprocessing" id="toc-preprocessing" class="nav-link" data-scroll-target="#preprocessing">Preprocessing</a></li>
+  <li><a href="#quasi-mapping" id="toc-quasi-mapping" class="nav-link" data-scroll-target="#quasi-mapping">(Quasi-)Mapping</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#quality-control" id="toc-quality-control" class="nav-link" data-scroll-target="#quality-control">Quality Control</a></li>
+  </ul></li>
   <li><a href="#data-responsibility" id="toc-data-responsibility" class="nav-link" data-scroll-target="#data-responsibility">Data Responsibility</a></li>
   <li><a href="#acknowledgements" id="toc-acknowledgements" class="nav-link" data-scroll-target="#acknowledgements">Acknowledgements</a></li>
   <li><a href="#closing-procedures" id="toc-closing-procedures" class="nav-link" data-scroll-target="#closing-procedures">Closing Procedures</a></li>
@@ -92,22 +99,44 @@ ul.task-list{list-style: none;}
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<div class="cell">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
-<p></p><figcaption aria-hidden="true" class="figure-caption">test fig.</figcaption><p></p>
-</figure>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Project Description
 </div>
 </div>
+<div class="callout-body-container callout-body">
+<p>“Our aim is to unravel global molecular fingerprints of glomerular diseases by RNA profiling of kidney tissue . We sample tissue from diagnostic kidney biopsies and perform microdissection into glomerular and tubulointerstitial fractions. In this subproject, RNA isolation and library preparation has been performed (via BEA core faciltiy) on glomerular and tubulointerstitial fractions from IgAN (n=84) and healthy living kidney donors (n=11). Libraries were sequenced at SciLife lab (Illumina Novaseq 6000). Now we need help to analyse differential gene expression between patients and controls, perform enriched pathway analyses and also to correlate DEG to clinical variables.”</p>
 </div>
+</div>
+<p>In total, there are 189 samples (One missing - which?). A contract was set up for 100 hours:</p>
+<ul>
+<li>Run best practive RNAseq preprocessing pipeline</li>
+<li>Pre- and post-alignment quality control</li>
+<li>Evaluate and if necessary control for data heterogeneity</li>
+<li>Differential expression of patients vs control + pathway analysis</li>
+<li>correlation gene expression w/ clinical parameters and pathology scores (discuss with User)</li>
+<li>Report with all results, tables and analysis code</li>
+</ul>
 </section>
 <section id="material-and-methods" class="level1">
 <h1>Material and Methods</h1>
+<section id="preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing">Preprocessing</h2>
+<p>Quality control was performed on raw and trimmed reads using FastQC (v0.11.8) and FastP (v0.23.2). The results for all samples were summarized using MultiQC (v). Sequencing adapters and low quality bases and reads were removed using Trimmomatic (wrapped in TrimGalore v0.6.1) using the standard parameters.</p>
+</section>
+<section id="quasi-mapping" class="level2">
+<h2 class="anchored" data-anchor-id="quasi-mapping">(Quasi-)Mapping</h2>
+</section>
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
+<section id="quality-control" class="level2">
+<h2 class="anchored" data-anchor-id="quality-control">Quality Control</h2>
+</section>
 </section>
 <section id="data-responsibility" class="level1">
 <h1>Data Responsibility</h1>
