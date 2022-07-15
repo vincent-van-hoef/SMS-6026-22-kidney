@@ -42,7 +42,6 @@ process FASTQC {
 	cpus 3
 	time 90.m
 	scratch false
-	cache false
 	module 'bioinfo-tools:FastQC/0.11.8'
 	clusterOptions '-A sens2022505'
 
@@ -64,7 +63,7 @@ process TRIMGALORE {
 	tag "$id"
 
 	executor "slurm"
-	cpus 4
+	cpus 12
 	time 120.m
 	scratch false
 	module 'bioinfo-tools:TrimGalore/0.6.1'
@@ -78,11 +77,14 @@ process TRIMGALORE {
 
 	script:
 	"""
+	ln -s ${reads[0]} ${id}_1.fastq.gz
+        ln -s ${reads[1]} ${id}_2.fastq.gz
+
 	trim_galore -q 20 \
 		--paired \
-		--cores $task.cpus \
-		--basename $id \
-		$reads
+		--cores 4 \
+		${id}_1.fastq.gz \
+		${id}_2.fastq.gz
 	"""
 }
 
@@ -95,7 +97,6 @@ process FASTQC_TRIM {
 	cpus 3
 	time 90.m
 	scratch false
-	cache false
 	module 'bioinfo-tools:FastQC/0.11.8'
 	clusterOptions '-A sens2022505'
 

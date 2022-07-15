@@ -23,6 +23,16 @@ comments:
     hypothesis: true
 ---
 
+:::{.callout-note collapse="true"}
+
+# Click here to see the version and updates of this report
+
+Here you can see the status of the report. This will be updated as sections are added or improved.
+
+- Version 1: [15/7/22] First version - several sections still missing. 
+
+:::
+
 # Introduction
 
 ::: {.callout-note}
@@ -30,7 +40,16 @@ comments:
 "Our aim is to unravel global molecular fingerprints of glomerular diseases by RNA profiling of kidney tissue . We sample tissue from diagnostic kidney biopsies and perform microdissection into glomerular and tubulointerstitial fractions. In this subproject, RNA isolation and library preparation has been performed (via BEA core faciltiy) on glomerular and tubulointerstitial fractions from IgAN (n=84) and healthy living kidney donors (n=11). Libraries were sequenced at SciLife lab (Illumina Novaseq 6000). Now we need help to analyse differential gene expression between patients and controls, perform enriched pathway analyses and also to correlate DEG to clinical variables."
 :::
 
-In total, there are 189 samples (One missing - which?). A contract was set up for 100 hours:
+In total, there are 189 samples (One missing - which?). 
+```{ojs}
+samples = FileAttachment("./../db/metadata.csv").csv({typed: true})
+```
+
+```{ojs}
+Inputs.table(samples)
+```
+
+A contract was set up for 100 hours:
 
 * Run best practive RNAseq preprocessing pipeline
 * Pre- and post-alignment quality control
@@ -41,15 +60,44 @@ In total, there are 189 samples (One missing - which?). A contract was set up fo
 
 # Material and Methods
 
+Analysis code is available on Github: [link](https://github.com/vincent-van-hoef/SMS-6026-22-kidney).
+
 ## Preprocessing
 
-Quality control was performed on raw and trimmed reads using FastQC (v0.11.8) and FastP (v0.23.2). The results for all samples were summarized using MultiQC (v). Sequencing adapters and low quality bases and reads were removed using Trimmomatic (wrapped in TrimGalore v0.6.1) using the standard parameters.
+Quality control was performed on raw and trimmed reads using FastQC (v0.11.8) and FastP (v0.23.2). The results for all samples were summarized using MultiQC (v1.7). Sequencing adapters and low quality bases and reads were removed using CutAdapt v2.3 (wrapped in TrimGalore v0.6.1) using the standard parameters.
 
 ## (Quasi-)Mapping
+
+Transcript expression was quantified using Salmon (v1.6.0) and XXX collection of transcripts. Salmon was run using the --validateMappings, --seqBias and --gcBias flags. Gene-levels count estimates were collected by using the tximport R package (v1.20.0).
+
+## Differential Expression
+
+The R package DESeq2 (v1.32.0) was used for the differential expression analyses.
+
+## Pathway Analysis
 
 # Results
 
 ## Quality Control
+
+### MultiQC
+
+Modern high throughput sequencers can generate hundreds of millions of sequences in a single run. Before analysing this sequences to draw biological conclusions you should always perform some simple quality control checks to ensure that the raw data looks good and there are no problems or biases in your data which may affect how you can usefully use it. Two very useful quality control softwares were run on the data: FastQC and FastP. These tools are run on a per-sample basis and then summarized using MultiQC (plots below). These contain many high-quality plots; most of them are interactive and with relevant help sections to help interpretation. Most figures can be filtered and downloaded as needed. If the figures are too small to see, please right-click and “Open Frame in New Tab”
+
+::: {.panel-tabset .column-page-inset-right}
+
+# Raw Reads
+
+# Trimmed Reads
+
+:::
+
+### PCA
+
+## Differential Expression
+
+## Pathway Analysis
+
 
 # Data Responsibility
 
