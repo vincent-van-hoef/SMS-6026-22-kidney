@@ -95,18 +95,23 @@ Modern high throughput sequencers can generate hundreds of millions of sequences
 ### PCA
 
 ```{r}
-data(cars)
-ojs_define(cars2 = cars)
+data(mtcars)
+ojs_define(cars = mtcars)
+```
+
+```{ojs}
+viewof col  = Input.radio(["cyl", "disp", "hp", "drat", "wt", "qsec"], {label: "Select column to plot"})
 ```
 
 ```{ojs}
 speedChart = Plot.plot({
   marks: [
-  Plot.line(transpose(cars2),
-  {x: "speed", y: "dist"},
-  {stroke: "red"})
-  ]
-})
+    Plot.line(transpose(cars),
+      {x: "mpg", y: col},
+      { stroke: "red" }
+    )
+  ]}
+)
 ```
 
 ## Differential Expression
