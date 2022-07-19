@@ -13,14 +13,17 @@ params.outdir	= "/proj/sens2022505/nobackup/custom_analysis/results/"
 params.meta	= "/proj/sens2022505/analysis/db/metadata.csv"
 params.txs	= "/proj/sens2022505/analysis/db/Homo_sapiens.GRCh38.cdna.all.fa"
 params.genome	= "/sw/data/iGenomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa"
+params.index	= "/sw/data/iGenomes/Homo_sapiens/NCBI/GRCh38/Sequence/STARIndex/"
+params.junctions	= "/sw/data/iGenomes/Homo_sapiens/NCBI/GRCh38/Sequence/STARIndex//sjdbList.fromGTF.out.tab"
+params.gtf	= "/sw/data/iGenomes/Homo_sapiens/NCBI/GRCh38/Annotation/Genes/genes.gtf"
 
 // Modules
 include { 
-	FASTP;
 	FASTQC;
 	FASTQC_TRIM;
 	TRIMGALORE;
 	MULTIQC;
+	STAR_ALIGN;
 	SALMON_INDEX;
 	SALMON_QUANT;
 	CREATE_TX2GENE;
@@ -43,16 +46,18 @@ workflow{
 			}
 		.set{ fq_ch }
 
-	FASTP(fq_ch.reads)
 	FASTQC(fq_ch.reads)
 	TRIMGALORE(fq_ch.reads)
 	FASTQC_TRIM(TRIMGALORE.out.reads)
-	MULTIQC(FASTP.out.json.collect({it[1]}),
-		FASTQC.out.zip.collect({it[1]}),
+	MULTIQC(FASTQC.out.zip.collect({it[1]}),
 		FASTQC_TRIM.out.zip.collect({it[1]}))
+	STAR_ALIGN(TRIMGALORE.out.reads,
+		params.index,
+		params.gtf,
+		params.junctions)
 	SALMON_INDEX(params.txs,
 		params.genome)
-	SALMON_QUANT(FASTP.out.clean_fq,
+	SALMON_QUANT(TRIMGALORE.out.reads,
 		SALMON_INDEX.out)
 	CREATE_TX2GENE(params.txs)
 	CREATE_META(fq_ch.ids.collectFile(name: "ids.csv", newLine: true),

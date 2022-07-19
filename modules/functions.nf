@@ -26,6 +26,7 @@ process FASTP {
 		-o ${id}_1_clean.fastq.gz \
 		-O ${id}_2_clean.fastq.gz \
 		-p \
+		--detect_adapter_for_pe \
 		-j ${id}_fastp.json \
 		-h ${id}_fastp.html \
 		-R "${id}_fastp_report" \
@@ -117,7 +118,6 @@ process MULTIQC {
 
 	publishDir "${params.outdir}/QC/trimmed/", mode: 'copy', overwrite: true, pattern: '*trimmed_multiqc*'
 	publishDir "${params.outdir}/QC/raw/", mode: 'copy', overwrite: true, pattern: '*raw_multiqc*'
-	publishDir "${params.outdir}/QC/fastp/", mode: 'copy', overwrite: true, pattern: '*fastp_multiqc*'
 
 	executor "slurm"
 	cpus 3
@@ -126,7 +126,6 @@ process MULTIQC {
 	clusterOptions '-A sens2022505'
 
 	input:
-	path(fastp)
 	path(fastqc)
 	path(trimgalore)
 
@@ -135,9 +134,54 @@ process MULTIQC {
 
 	script:
 	"""
-	multiqc *_fastp.json -n fastp_multiqc
 	multiqc *_R*_fastqc.zip -n raw_multiqc
 	multiqc *_val_*_fastqc.zip -n trimmed_multiqc
+	"""
+}
+
+process STAR_ALIGN {
+
+	tag "$id"
+	publishDir "${params.outdir}/STAR/bam", mode: 'symlink', overwrite: true, pattern: '*.bam'
+	publishDir "${params.outdir}/STAR/readsPerGene", mode: 'symlink', overwrite: true, pattern: '*.out.tab'
+	publishDir "${params.outdir}/STAR/bam/log", mode: 'symlink', overwrite: true, pattern: '*Log*'
+
+	executor "slurm"
+	cpus 16
+	time 180.m
+	module 'bioinfo-tools:samtools/1.14:star/2.5.1b'
+	clusterOptions '-A sens2022505'
+
+	input:
+	tuple val(id), path(reads)
+	path index
+	path gtf
+	path junctions
+
+	output:
+	tuple val(id), path("*.bam"), emit: bam
+	tuple val(id), path("*Log.final.out")
+	tuple val(id), path("*out.tab")
+
+	script:
+	"""
+	STAR \
+		--genomeDir $index \
+		--readFilesCommand zcat \
+		--runThreadN $task.cpus \
+		--readFilesIn $reads \
+		--sjdbFileChrStartEnd $junctions \
+		--sjdbGTFfile $gtf \
+		--outFileNamePrefix $id. \
+		--outSAMtype BAM SortedByCoordinate \
+		--quantMode GeneCounts \
+		--alignSJDBoverhangMin 1 \
+		--outFilterType BySJout \
+		--outFilterMultimapNmax 20 \
+		--outFilterMismatchNoverReadLmax 0.04 \
+		--alignIntronMin 20 \
+		--alignIntronMax 1000000 \
+		--alignMatesGapMax 1000000
 	"""
 }
 
@@ -183,7 +227,7 @@ process SALMON_QUANT {
 	clusterOptions '-A sens2022505'
 
 	input:
-	tuple val(id), path(freads), path(rreads)
+	tuple val(id), path(reads)
 	path(index)
 
 	output:
@@ -194,8 +238,8 @@ process SALMON_QUANT {
 	salmon quant \
 		-i $index \
 		-l A \
-		-1 $freads \
-		-2 $rreads \
+		-1 ${reads[0]} \
+		-2 ${reads[1]} \
 		--validateMappings \
 		--seqBias \
 		--gcBias \
