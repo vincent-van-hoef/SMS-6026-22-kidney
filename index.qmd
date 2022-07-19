@@ -100,7 +100,7 @@ ojs_define(cars = mtcars)
 ```
 
 ```{ojs}
-viewof col  = Input.radio(["cyl", "disp", "hp", "drat", "wt", "qsec"], {label: "Select column to plot"})
+viewof col  = Inputs.radio(["cyl", "disp", "hp", "drat", "wt", "qsec"], {label: "Select column to plot"})
 ```
 
 ```{ojs}
