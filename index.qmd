@@ -100,15 +100,14 @@ ojs_define(cars = mtcars)
 ```
 
 ```{ojs}
-viewof col  = Inputs.radio(["cyl", "disp", "hp", "drat", "wt", "qsec"], {label: "Select column to plot"})
+viewof col  = Inputs.radio(["cyl", "disp", "hp", "drat", "wt", "qsec"], {label: "Select column to plot",  value: "cyl"})
 ```
 
 ```{ojs}
 speedChart = Plot.plot({
   marks: [
     Plot.line(transpose(cars),
-      {x: "mpg", y: col},
-      { stroke: "red" }
+      {sort: "mpg", x: "mpg", y: col, stroke: "red"}
     )
   ]}
 )
