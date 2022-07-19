@@ -102,7 +102,7 @@ ojs_define(cars = cars)
 ```{ojs}
 speedChart = Plot.plot({
   marks: [
-  Plot.line(cars,
+  Plot.line(transpose(cars),
   {x: "speed", y: "dist"},
   {stroke: "red"})
   ]
