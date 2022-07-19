@@ -107,8 +107,11 @@ viewof col  = Inputs.radio(["cyl", "disp", "hp", "drat", "wt", "qsec"], {label: 
 speedChart = Plot.plot({
   marks: [
     Plot.line(transpose(cars),
-      {sort: "mpg", x: "mpg", y: col, z: "gear", stroke: "gear"}
-    )
+      {sort: "mpg", x: "mpg", y: col, stroke: "gear"}
+    ),
+    Plot.text(transpose(cars), Plot.selectLast(Plot({
+      x: "mpg", y:col, z: "gear", text: "gear", textAnchor: "start"
+})))
   ]}
 )
 ```
