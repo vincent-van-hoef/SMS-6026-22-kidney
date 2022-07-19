@@ -109,9 +109,9 @@ speedChart = Plot.plot({
     Plot.line(transpose(cars),
       {sort: "mpg", x: "mpg", y: col, stroke: "gear"}
     ),
-    Plot.text(transpose(cars), Plot.selectLast(Plot({
+    Plot.text(transpose(cars), Plot.selectLast({
       x: "mpg", y:col, z: "gear", text: "gear", textAnchor: "start"
-})))
+}))
   ]}
 )
 ```
