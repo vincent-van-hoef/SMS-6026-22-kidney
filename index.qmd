@@ -94,6 +94,21 @@ Modern high throughput sequencers can generate hundreds of millions of sequences
 
 ### PCA
 
+```{r}
+data(cars)
+ojs_define(cars = cars)
+```
+
+```{ojs}
+speedChart = Plot.plot({
+  marks: [
+  Plot.line(cars,
+  {x: "speed", y: "dist"},
+  {stroke: "red"})
+  ]
+})
+```
+
 ## Differential Expression
 
 ## Pathway Analysis
